@@ -3,12 +3,14 @@ import Menu from "../components/textComponents/Menu";
 import Profile from "../components/textComponents/Profile";
 import Acc from "../components/textComponents/Acc";
 import { IoMdHome } from "react-icons/io";
+import { useSocketContext } from "../context/SocketContext";
 // import Chat from "./Chat";
 
 const Text = () => {
   const [isAccOpen, setIsAccOpen] = useState("no");
   const [isProfileOpen, setIsProfileOpen] = useState("no");
-
+  const {onlineUsers}=useSocketContext();
+  console.log(onlineUsers);
   const handleClick = () => {
     setIsAccOpen("no");
     setIsProfileOpen("no");

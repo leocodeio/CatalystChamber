@@ -2,11 +2,14 @@ import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { AccountContext } from "../../context/AccountDetails";
 import axios from "axios";
+import { useSocketContext } from "../../context/SocketContext";
 
 const Connects = (props) => {
   const searchedUsers = props.searchedUsers;
   const navigate = useNavigate();
   const { Account } = useContext(AccountContext);
+  const { onlineUsers } = useSocketContext();
+
   const handleClick = async (userId) => {
     // console.log(`Clicked user with ID: ${userId}`);
     try {
@@ -27,7 +30,9 @@ const Connects = (props) => {
           key={user._id}
           onClick={() => handleClick(user._id)}
           style={{ cursor: "pointer" }}
-          className="user-card"
+          className={
+            onlineUsers.includes(user._id) ? "bg-green-500" : "bg-gray-500"
+          }
         >
           <p>{user.name}</p>
           <p>{user.tag}</p>

@@ -5,42 +5,39 @@ import io from "socket.io-client";
 const SocketContext = createContext();
 
 export const useSocketContext = () => {
-	return useContext(SocketContext);
+  return useContext(SocketContext);
 };
 
 export const SocketContextProvider = ({ children }) => {
-	const { Account } = useContext(AccountContext); // Use useContext to get Account from AccountContext
-	const [socket, setSocket] = useState(null); 
-	const [onlineUsers, setOnlineUsers] = useState([]);
+  const { Account } = useContext(AccountContext);
+  const [socket, setSocket] = useState(null);
+  const [onlineUsers, setOnlineUsers] = useState([]);
 
-	useEffect(() => {
-		let socket;
-		if (Account) {
-			socket = io("http://localhost:3001", { // Replace with your server URL
-				query: {
-					userId: Account._id,
-				},
-			});
+  useEffect(() => {
+    if (Account) {
+      const newSocket = io("http://localhost:3001", {
+        query: { userId: Account._id },
+      });
 
-			setSocket(socket);
+      setSocket(newSocket);
 
-			socket.on("getOnlineUsers", (users) => {
-				setOnlineUsers(users);
-			});
+      newSocket.on("connect_error", (err) => {
+        console.error("Connection Error:", err.message);
+      });
 
-			return () => socket.close();
-		} else {
-			if (socket) {
-				socket.close();
-				setSocket(null);
-			}
-		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [Account]);
+      newSocket.on("getOnlineUsers", (users) => {
+        setOnlineUsers(users);
+      });
 
-	return (
-		<SocketContext.Provider value={{ socket, onlineUsers }}>
-			{children}
-		</SocketContext.Provider>
-	);
+      return () => {
+        newSocket.disconnect();
+      };
+    }
+  }, [Account]);
+
+  return (
+    <SocketContext.Provider value={{ socket, onlineUsers,setOnlineUsers }}>
+      {children}
+    </SocketContext.Provider>
+  );
 };

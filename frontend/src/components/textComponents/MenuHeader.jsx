@@ -1,11 +1,11 @@
-import * as React from "react";
+import React, { useContext, useState } from "react";
 import Button from "@mui/material/Button";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { AccountContext } from "../../context/AccountDetails";
-import { useContext, useState } from "react";
 import { IoPerson } from "react-icons/io5";
 import axios from "axios";
+import { useSocketContext } from "../../context/SocketContext";
 
 export default function MenuHeader(props) {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -18,23 +18,28 @@ export default function MenuHeader(props) {
     setIsBackdropVisible(true);
   };
 
-  const { Account,setIsLogged } = useContext(AccountContext);
+  const { Account, setIsLogged } = useContext(AccountContext);
+  const { socket, onlineUsers, setOnlineUsers } = useSocketContext();
 
   const handleLogout = async () => {
     try {
-      const tag=Account.tag;
-      const additions=props.searchedUsers;
-      // console.log(id,additions);
-      const response = await axios.post('http://localhost:3001/users/connects', {tag,additions});
+      const tag = Account.tag;
+      const additions = props.searchedUsers;
+
+      setOnlineUsers(onlineUsers.filter(id => id !== Account._id));
+
+      const response = await axios.post('http://localhost:3001/users/connects', { tag, additions });
       if (response.status === 200) {
-        console.log("done addin useUsersPair");
+        console.log("done adding useUsersPair");
       } else {
-        console.log("some probe occured");
+        console.log("some problem occurred");
       }
+
+      socket.emit("logout");
     } catch (error) {
-      console.log("error occured",error.message);
+      console.log("error occurred", error.message);
     }
-    
+
     setIsLogged("no");
     handleClose();
   };
