@@ -1,12 +1,18 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 
 const RenderArea = ({ messages }) => {
-  console.log(messages[1]);
+  const lastMessageRef = useRef();
+	useEffect(() => {
+		setTimeout(() => {
+			lastMessageRef.current?.scrollIntoView({ behavior: "smooth" });
+		}, 100);
+	}, [messages]);
+
   return (
     <>
       {messages.length > 0 ? (
         messages.map((message, index) => (
-          <div key={index}>{message}</div>
+          <div key={index} ref={lastMessageRef}>{message}</div>
         ))
       ) : (
         <p>No messages yet</p>

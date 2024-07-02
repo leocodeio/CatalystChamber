@@ -1,4 +1,5 @@
-const Conversation = require('../models/Coversation.js');
+const Conversation = require("../models/Coversation.js");
+const { getReceiverSocketId } = require("../socket/socket.js");
 
 exports.addConversation = async (req, res) => {
   const { senderId, receiverId } = req.body;
@@ -41,6 +42,11 @@ exports.addChatMessage = async (req, res) => {
 
     conversation.messages.push(message);
     await conversation.save();
+
+    const receiverSocketId = getReceiverSocketId(receiverId);
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit("newMessage", message);
+    }
     res.status(200).json({ message: "Message added successfully" });
   } catch (error) {
     console.error("Add chat message error:", error);

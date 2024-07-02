@@ -10,17 +10,20 @@ const SendArea = ({ userId, text, setText }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    
     try {
-      await axios.post(`http://localhost:3001/conversations/chat/${userId.id}`, {
-        senderId: Account._id,
-        message: text,
-      });
+      await axios.post(
+        `http://localhost:3001/conversations/chat/${userId.id}`,
+        {
+          senderId: Account._id,
+          message: text,
+        }
+      );
     } catch (err) {
       console.log("error while sending new convo", err);
+    } finally {
+      setText("");
     }
-    setText("");
-
   };
 
   return (
@@ -34,7 +37,8 @@ const SendArea = ({ userId, text, setText }) => {
           type="text"
           placeholder="Message..."
           className="pl-3 py-0.5 w-full ml-4 rounded-lg"
-          onChange={(e) => setText(e.target.value)}
+          value={text} // Bind the value to the state
+          onChange={(e) => setText(e.target.value)} // Update the state on change
         />
         <div className="flex gap-1">
           <button type="submit">
