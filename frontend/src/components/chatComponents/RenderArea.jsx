@@ -1,26 +1,23 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect } from "react";
 
 const RenderArea = ({ messages }) => {
-  const lastMessageRef = useRef();
-	useEffect(() => {
-		setTimeout(() => {
-			lastMessageRef.current?.scrollIntoView({ behavior: "smooth" });
-		}, 100);
-	}, [messages]);
+  useEffect(() => {
+    const container = document.getElementById("messageContainer");
+    if (container) {
+      container.scrollTop = container.scrollHeight;
+    }
+  }, [messages]);
 
   return (
-    <>
+    <div id="messageContainer" style={{ overflowY: "scroll", height: "300px" }}>
       {messages.length > 0 ? (
         messages.map((message, index) => (
-          <div key={index} ref={lastMessageRef}>{message}</div>
+          <div key={index}>{message}</div>
         ))
       ) : (
         <p>No messages yet</p>
       )}
-      <br/>
-      <br/>
-      <br/>
-    </>
+    </div>
   );
 };
 

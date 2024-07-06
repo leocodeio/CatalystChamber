@@ -3,6 +3,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { AccountContext } from "../../context/AccountDetails";
 import RenderArea from "./RenderArea";
 import { useSocketContext } from "../../context/SocketContext";
+
 const Convos = ({ userId }) => {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -26,17 +27,22 @@ const Convos = ({ userId }) => {
       } catch (err) {
         console.log("error while fetching convo", err);
       }
-      socket?.on("newMessage", (newMessage) => {
-        setMessages([...messages, newMessage]);
-      });
-      console.log(messages);
 
       setLoading(false);
     };
 
     fetchMessages();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+
+    const handleNewMessage = (newMessage) => {
+      setMessages((prevMessages) => [...prevMessages, newMessage]);
+    };
+
+    socket?.on("newMessage", handleNewMessage);
+
+    return () => {
+      socket?.off("newMessage", handleNewMessage);
+    };
+  }, [Account._id, socket, userId.id]);
 
   return (
     <div>
