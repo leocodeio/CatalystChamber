@@ -47,6 +47,11 @@ exports.addChatMessage = async (req, res) => {
     if (receiverSocketId) {
       io.to(receiverSocketId).emit("newMessage", message);
     }
+    const senderSocketId = getReceiverSocketId(senderId);
+    // console.log(receiverSocketId)
+    if (senderSocketId) {
+      io.to(senderSocketId).emit("newMessage", message);
+    }
     conversation.messages.push(message);
     await conversation.save();
     res.status(200).json({ message: "Message added successfully" });
