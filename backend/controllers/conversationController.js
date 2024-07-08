@@ -1,8 +1,11 @@
 const Conversation = require("../models/Conversation.js");
-const {io, getReceiverSocketId } = require("../socket/socket.js");
+const { io, getReceiverSocketId } = require("../socket/socket.js");
 
 exports.addConversation = async (req, res) => {
   const { senderId, receiverId } = req.body;
+  if (!senderId || !receiverId) {
+    return res.status(400).json({ error: "All fields are required" });
+  }
   try {
     const exist = await Conversation.findOne({
       participants: { $all: [senderId, receiverId] },
@@ -23,10 +26,9 @@ exports.addConversation = async (req, res) => {
 };
 
 exports.addChatMessage = async (req, res) => {
-  const senderId = req.body.senderId;
+  const { senderId, message } = req.body;
   const receiverId = req.params.id;
-  const message = req.body.message;
-
+  console.log(senderId, message, receiverId);
   if (!senderId || !receiverId || !message) {
     return res.status(400).json({ error: "All fields are required" });
   }
@@ -40,20 +42,19 @@ exports.addChatMessage = async (req, res) => {
       return res.status(404).json({ error: "Conversation not found" });
     }
 
-    
-    // console.log(receiverId)
-    const receiverSocketId = getReceiverSocketId(receiverId);
-    // console.log(receiverSocketId)
-    if (receiverSocketId) {
-      io.to(receiverSocketId).emit("newMessage", message);
-    }
-    const senderSocketId = getReceiverSocketId(senderId);
-    // console.log(receiverSocketId)
-    if (senderSocketId) {
-      io.to(senderSocketId).emit("newMessage", message);
-    }
-    conversation.messages.push(message);
+    conversation.messages.push({ senderId, message });
     await conversation.save();
+
+    const emitMessage = (userId, eventMessage) => {
+      const socketId = getReceiverSocketId(userId);
+      if (socketId) {
+        io.to(socketId).emit("newMessage", eventMessage);
+      }
+    };
+    const timestamp = new Date().toISOString();
+    emitMessage(receiverId, { senderId, message,timestamp });
+    emitMessage(senderId, { senderId, message,timestamp });
+
     res.status(200).json({ message: "Message added successfully" });
   } catch (error) {
     console.error("Add chat message error:", error);
@@ -62,7 +63,7 @@ exports.addChatMessage = async (req, res) => {
 };
 
 exports.getChatMessages = async (req, res) => {
-  const senderId = req.query.senderId;
+  const { senderId } = req.query;
   const receiverId = req.params.id;
 
   try {

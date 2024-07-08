@@ -8,11 +8,16 @@ const RenderArea = ({ messages }) => {
     }
   }, [messages]);
 
+
   return (
-    <div id="messageContainer" style={{ overflowY: "scroll", height: "300px" }}>
+    <div id="messageContainer" style={{ overflowY: "scroll", height: "490px" }}>
       {messages.length > 0 ? (
         messages.map((message, index) => (
-          <div key={index}>{message}</div>
+          <div key={index} style={{ borderBottom: '1px solid #ccc', padding: '10px' }}>
+            <p><strong>Sender ID:</strong> {message.senderId}</p>
+            <p><strong>Message:</strong> {message.message}</p>
+            <p><strong>Timestamp:</strong> {new Date(message.timestamp).toLocaleString()}</p>
+          </div>
         ))
       ) : (
         <p>No messages yet</p>
