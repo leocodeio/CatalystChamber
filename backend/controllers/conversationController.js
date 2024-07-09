@@ -28,7 +28,7 @@ exports.addConversation = async (req, res) => {
 exports.addChatMessage = async (req, res) => {
   const { senderId, message } = req.body;
   const receiverId = req.params.id;
-  console.log(senderId, message, receiverId);
+  // console.log(senderId, message, receiverId);
   if (!senderId || !receiverId || !message) {
     return res.status(400).json({ error: "All fields are required" });
   }

@@ -3,6 +3,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { AccountContext } from "../../context/AccountDetails";
 import RenderArea from "./RenderArea";
 import { useSocketContext } from "../../context/SocketContext";
+import 'tailwindcss/tailwind.css';
 
 const Convos = ({ userId }) => {
   const [messages, setMessages] = useState([]);
@@ -46,7 +47,13 @@ const Convos = ({ userId }) => {
 
   return (
     <div>
-      {loading ? <p>Loading...</p> : <RenderArea messages={messages} />}
+      <div className="h-full bg-white rounded-lg shadow-lg p-4">
+        {loading ? (
+          <p className="text-center text-gray-500">Loading...</p>
+        ) : (
+          <RenderArea messages={messages} currentUserId={Account._id} />
+        )}
+      </div>
     </div>
   );
 };
