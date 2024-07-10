@@ -15,7 +15,7 @@ const Connects = (props) => {
     try {
       await axios.post("http://localhost:3001/conversations/add", {
         senderId: Account._id,
-        recieverId: userId,
+        receiverId: userId,
       });
     } catch (err) {
       console.log("error while making new convo", err);

@@ -32,9 +32,15 @@ exports.login = async (req, res) => {
 };
 
 exports.searchUser = async (req, res) => {
-  const { searchTag } = req.body;
+  const { searchTag,id } = req.body;
   try {
-    const user = await User.findOne({ tag: searchTag });
+    const user = await User.findOne({
+      $or: [
+        { tag: searchTag },
+        { _id: id }
+      ]
+    });
+    
     if (user) {
       res.status(200).send(user);
     } else {

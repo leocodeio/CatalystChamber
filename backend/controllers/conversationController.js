@@ -3,6 +3,7 @@ const { io, getReceiverSocketId } = require("../socket/socket.js");
 
 exports.addConversation = async (req, res) => {
   const { senderId, receiverId } = req.body;
+  console.log(senderId,receiverId)
   if (!senderId || !receiverId) {
     return res.status(400).json({ error: "All fields are required" });
   }
