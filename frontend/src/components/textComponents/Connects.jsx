@@ -34,6 +34,15 @@ const Connects = (props) => {
             onlineUsers.includes(user._id) ? "bg-green-500" : "bg-gray-500"
           }
         >
+          <p className="text-sm text-gray-500 mb-2">
+                <img
+                  src={`data:image/jpeg;base64,${
+                    user.profilePic
+                  }`}
+                  alt="Profile"
+                  className="w-8 h-8 rounded-full"
+                />
+              </p>
           <p>{user.name}</p>
           <p>{user.tag}</p>
           <hr />
